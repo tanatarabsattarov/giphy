@@ -72,7 +72,7 @@
                     var type = $(this).attr("data-name");
                     var header = $("<h1>").text(type).addClass("text-center col-md-12 mb-5");
                     $("#giphy").append(header);
-                    var queryURL = "http://api.giphy.com/v1/gifs/search?q=" + type + "&api_key=yABNPYZ2pcAKLqS1PXx9QB7GsiiKo3sP&limit=10";
+                    var queryURL = "https://api.giphy.com/v1/gifs/search?q=" + type + "&api_key=yABNPYZ2pcAKLqS1PXx9QB7GsiiKo3sP&limit=10";
                     console.log(type);
                     $.ajax({
                         url: queryURL,
