@@ -1,0 +1,127 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Giphy</title>
+    <!-- bootstrap css cdn -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <style>
+        .size {
+            width: 100%;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="jumbotron">
+                    <h4>Add button:</h4>
+                    <form>
+                        <div class="form-row">
+                            <div class="col-md-3">
+                                <input type="text" id="topicInput" class="form-control">
+                            </div>
+                            <div class="col-md-1">
+                                <button type="submit" id="addTopic" class="btn btn-primary">Add</button>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div id="buttons"></div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="row mt-5" id="giphy"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <script src="https://code.jquery.com/jquery-3.4.0.min.js"
+            integrity="sha256-BJeo0qm959uMBGb65z40ejJYGSgR7REI4+CW1fNKwOg=" crossorigin="anonymous"></script>
+
+
+        <script>
+            var topics = ["Happy", "Angry", "Anxiety", "Love", "Hatred", "Crazy", "Inspiration", "Surprise", "Sadness", "Shame"]
+
+
+            function renderButtons() {
+                $("#buttons").empty();
+                for (var i = 0; i < topics.length; i++) {
+                    var a = $("<button>");
+                    a.addClass("btn btn-primary searchButton m-1");
+                    a.attr("data-name", topics[i]);
+                    a.text(topics[i]);
+                    $("#buttons").append(a);
+                }
+
+
+                $(".searchButton").on("click", function () {
+                    $("#giphy").empty();
+                    var type = $(this).attr("data-name");
+                    var header = $("<h1>").text(type).addClass("text-center col-md-12 mb-5");
+                    $("#giphy").append(header);
+                    var queryURL = "http://api.giphy.com/v1/gifs/search?q=" + type + "&api_key=yABNPYZ2pcAKLqS1PXx9QB7GsiiKo3sP&limit=10";
+                    console.log(type);
+                    $.ajax({
+                        url: queryURL,
+                        method: "GET"
+                    }).then(function (response) {
+                        for (var t = 0; t < response.data.length; t++) {
+                            var newContainer = $("<div>");
+                            newContainer.addClass("col-md-3");
+                            var img = $("<img>")
+                            img.attr("src", response.data[t].images.downsized_still.url).addClass("size");
+                            img.attr("data-still", response.data[t].images.downsized_still.url);
+                            img.attr("data-animate", response.data[t].images.downsized.url);
+                            img.attr("data-state", "still");
+                            img.addClass("gif");
+                            var rating = response.data[t].rating;
+                            var p = $("<p>").html("<br>Rating: " + rating);
+                            $(newContainer).append(img);
+                            $(newContainer).append(p);
+                            $("#giphy").append(newContainer);
+                        };
+                        $(".gif").on("click", function () {
+                            var state = $(this).attr("data-state");
+                            if (state === "still") {
+                                $(this).attr("src", $(this).attr("data-animate"));
+                                $(this).attr("data-state", "animate");
+                            }
+                            else {
+                                $(this).attr("src", $(this).attr("data-still"));
+                                $(this).attr("data-state", "still");
+                            };
+                        });
+                    });
+                })
+
+            };
+
+            $("#addTopic").on("click", function (event) {
+                event.preventDefault();
+                var addTopic = $("#topicInput").val().trim();
+                if (addTopic) {
+                    topics.push(addTopic);
+                    renderButtons();
+                    $("#topicInput").val("");
+                }
+            });
+            renderButtons();
+
+        </script>
+
+</body>
+
+</html>
